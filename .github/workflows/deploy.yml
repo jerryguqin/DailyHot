@@ -2,9 +2,9 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [ "main" ]  # 监听 main 分支的推送
+    branches: [ "jerryguqin" ]  # 监听 main 分支的推送
   pull_request:           # 可选：在 PR 时触发构建测试
-    branches: [ "main" ]
+    branches: [ "jerryguqin" ]
 
 permissions:
   contents: write        # 允许部署到 Pages
