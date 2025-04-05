@@ -9,7 +9,7 @@ lerna-debug.log*
 
 node_modules
 .DS_Store
-dist
+!dist/   # 允许 dist 目录下的内容被跟踪（根据需要选择）
 dist-ssr
 coverage
 *.local
