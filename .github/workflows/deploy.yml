@@ -1,3 +1,16 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [ "main" ]  # 监听 main 分支的推送
+  pull_request:           # 可选：在 PR 时触发构建测试
+    branches: [ "main" ]
+
+permissions:
+  contents: write        # 允许部署到 Pages
+  pages: write
+  id-token: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -5,28 +18,33 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Clean environment
-        run: |
-          rm -f yarn.lock
-          echo "COREPACK_ENABLE_STRICT=0" >> $GITHUB_ENV
-
-      - name: Enable pnpm
-        run: corepack enable pnpm
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: '20'   # 指定 Node.js 版本
+          cache: 'pnpm'        # 缓存 pnpm 依赖
+
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       - name: Build project
         run: pnpm build
 
-      - name: Upload Pages Artifact
+      - name: Upload production build
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
-          name: github-pages  # 关键修复点！确保产物名称唯一性
+          path: ./dist   # 根据实际构建输出目录调整（如：build、out）
+
+  deploy:
+    needs: build         # 等待 build 任务完成
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
