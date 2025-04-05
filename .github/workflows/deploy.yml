@@ -2,7 +2,7 @@ name: Build and Deploy
 
 on:
   push:
-    branches: [ "jerryguqin" ]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -11,17 +11,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Enable Corepack (for pnpm)
-        run: corepack enable
+      - name: Clean environment
+        run: |
+          # 删除可能干扰的锁定文件
+          rm -f yarn.lock
+          echo "COREPACK_ENABLE_STRICT=0" >> $GITHUB_ENV
+
+      - name: Enable pnpm
+        run: corepack enable pnpm
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'pnpm'        # 缓存依赖目录
+          cache: 'pnpm'
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile  # 强制使用 lockfile
+        run: pnpm install --frozen-lockfile
 
       - name: Build project
         run: pnpm build
