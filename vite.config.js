@@ -74,7 +74,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      port: 6688,
+      port: 6699,
     },
     build: {
       minify: "terser",
